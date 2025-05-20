@@ -57,18 +57,7 @@ Berikut adalah tampilan *screenshot* dari *dashboard* yang telah dibuat:
 
 ![Tampilan Dashboard](rasyid_alfiansyah-dashboard.png)
 
-## Hasil Analisis
-### Faktor Penentu *Attrition*
-Berdasarkan analisis Permutation Importance pada model SVM, berikut adalah fitur-fitur yang paling signifikan memengaruhi status akhir siswa (Graduate atau Dropout):
-
-| Peringkat | Fitur            | Tingkat Pengaruh (Mean Importance) |
-| --------- | ---------------- | ---------------- |
-| 1         | `Curricular_units_2nd_sem_approved`       | 0.14            |
-| 2         | `Tuition_fees_up_to_date`  | 0.065            |
-| 3         | `Curricular_units_2nd_sem_grade`            | 0.043            |
-| 4         | `Curricular_units_1st_sem_approved`      | 0.025            |
-| 5         | `Scholarship_holder` | 0.016            |
-
+## Menjalankan Sistem Machine Learning
 ### Performa Model Prediksi Status Siswa
 Model Support Vector Machine (SVM) dimanfaatkan untuk memprediksi risiko seorang siswa mengalami dropout atau berhasil graduate. Proses pelatihan model ini melibatkan analisis seluruh data siswa yang ada, dengan mengandalkan berbagai fitur sebagai input prediksi. Model ini mampu mengidentifikasi siswa dengan karakteristik serupa dengan mereka yang telah dropout atau graduate sebelumnya, memberikan prediksi yang akurat untuk intervensi dini
 
@@ -80,13 +69,29 @@ Model Support Vector Machine (SVM) dimanfaatkan untuk memprediksi risiko seorang
 | Recall    | 0.959   |
 | F1-Score  | 0.933   |
 
-## Menjalankan Aplikasi Predict
+### Menjalankan Aplikasi Predict
+Secara lokal anda dapat menjalankan aplikasi menggunakan perintah berikut:
 ```bash
 `streamlit run src/prediction.py`
 ```
 Buka *browser* di `http://localhost:8501`\
 Isi *form input* sesuai data siswa\
 Klik tombol **🔍 Prediksi**
+
+Anda juga dapat mengakses aplikasi prediksi melalui tautan berikut:
+[Students Status Prediction](https://menyelesaikan-permasalahan-institusi-pendidikan-gdsuvjjz2htbfd.streamlit.app/)
+
+## Hasil Analisis
+### Faktor Penentu *Attrition*
+Berdasarkan analisis Permutation Importance pada model SVM, berikut adalah fitur-fitur yang paling signifikan memengaruhi status akhir siswa (Graduate atau Dropout):
+
+| Peringkat | Fitur            | Tingkat Pengaruh (Mean Importance) |
+| --------- | ---------------- | ---------------- |
+| 1         | `Curricular_units_2nd_sem_approved`       | 0.14            |
+| 2         | `Tuition_fees_up_to_date`  | 0.065            |
+| 3         | `Curricular_units_2nd_sem_grade`            | 0.043            |
+| 4         | `Curricular_units_1st_sem_approved`      | 0.025            |
+| 5         | `Scholarship_holder` | 0.016            |
 
 ## Conclusion
 Berdasarkan analisis data siswa, beberapa faktor signifikan berkontribusi terhadap status kelulusan atau dropout di institusi pendidikan.
