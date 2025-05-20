@@ -1,11 +1,9 @@
-joblib
-matplotlib
-matplotlib-inline
-matplotlib-venn
-numpy
-pandas
-pandas-datareader
-pandas-gbq
-pandas-stubs
-scikit-learn
-seaborn
+joblib==1.5.0
+matplotlib==3.10.0
+matplotlib-inline==0.1.7
+matplotlib-venn==1.1.2
+numpy==2.0.2
+pandas==2.2.2
+scikit-learn==1.6.1
+seaborn==0.13.2
+# streamlit not installed
