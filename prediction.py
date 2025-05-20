@@ -2,74 +2,91 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
-
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
-# === Load model ===
-model = joblib.load('model.joblib')
+# Load model dan data referensi
+model = joblib.load("model.joblib")
+df = pd.read_csv("data_cleaned.csv")
 
-# === Load cleaned data (tanpa Status_enc) untuk info kolom ===
-df = pd.read_csv('data_cleaned.csv')
+# Setup encoder dan scaler
+X = df.drop(columns=["Status"])
+y = df["Status"]
 
-# === Buat encoder untuk input (pakai data asli supaya encoding konsisten) ===
-X = df.drop(columns=['Status'])
-y = df['Status']
-
-# Simpan label encoder dari training
 le_status = LabelEncoder()
 le_status.fit(y)
 
-# Encode categorical features
-X_encoded = X.copy()
-for col in X_encoded.select_dtypes(include='object').columns:
-    X_encoded[col] = LabelEncoder().fit_transform(X_encoded[col])
-
-# Scale numerical
-scaler = MinMaxScaler()
-X_scaled = scaler.fit_transform(X_encoded)
-
-# Simpan informasi kolom
 categorical_cols = X.select_dtypes(include='object').columns.tolist()
 numerical_cols = X.select_dtypes(include=np.number).columns.tolist()
-input_cols = categorical_cols + numerical_cols
+
+# Label encoding kategorikal
+encoders = {}
+for col in categorical_cols:
+    le = LabelEncoder()
+    le.fit(df[col])
+    encoders[col] = le
+
+# Scaling numerik
+scaler = MinMaxScaler()
+scaled_X = X.copy()
+for col in categorical_cols:
+    scaled_X[col] = encoders[col].transform(X[col])
+scaler.fit(scaled_X[numerical_cols])
 
 # === Streamlit UI ===
-st.title("🎓 Prediksi Status Mahasiswa (Graduate / Dropout)")
-st.write("Silakan isi data berikut untuk memprediksi status akhir mahasiswa:")
+st.set_page_config(page_title="Prediksi Mahasiswa", layout="centered")
+st.markdown("<h2 style='text-align:center;'>🎓 Prediksi Status Mahasiswa</h2>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center;'>Masukkan data berikut untuk mengetahui apakah mahasiswa akan lulus atau drop out.</p>", unsafe_allow_html=True)
+st.write("---")
 
-# Form untuk input satu per satu
-user_input = {}
-with st.form("input_form"):
-    for col in categorical_cols:
-        options = sorted(df[col].dropna().unique().tolist())
-        user_input[col] = st.selectbox(col, options)
+# Layout input
+with st.form("form_prediksi"):
+    col1, col2 = st.columns(2)
+    input_data = {}
 
+    # Input kategori (dropdown)
+    with col1:
+        for col in categorical_cols[:len(categorical_cols)//2]:
+            options = sorted(df[col].dropna().unique())
+            input_data[col] = st.selectbox(f"{col}", options)
+
+    with col2:
+        for col in categorical_cols[len(categorical_cols)//2:]:
+            options = sorted(df[col].dropna().unique())
+            input_data[col] = st.selectbox(f"{col}", options)
+
+    # Input numerik (angka)
     for col in numerical_cols:
         min_val = float(df[col].min())
         max_val = float(df[col].max())
-        user_input[col] = st.slider(col, min_val, max_val, float(df[col].median()))
+        median_val = float(df[col].median())
+        input_data[col] = st.number_input(f"{col}", min_value=min_val, max_value=max_val, value=median_val)
 
-    submitted = st.form_submit_button("Prediksi")
+    submitted = st.form_submit_button("🔍 Prediksi")
 
 if submitted:
     try:
-        # Masukkan input ke DataFrame
-        input_df = pd.DataFrame([user_input])
+        # Buat DataFrame dari input
+        input_df = pd.DataFrame([input_data])
 
-        # Encode categorical
+        # Encode kategorikal
         for col in categorical_cols:
-            le = LabelEncoder()
-            le.fit(df[col])
-            input_df[col] = le.transform(input_df[col])
+            input_df[col] = encoders[col].transform([input_df[col][0]])
 
-        # Scale numerical
+        # Scaling numerikal
         input_df[numerical_cols] = scaler.transform(input_df[numerical_cols])
 
         # Prediksi
-        prediction = model.predict(input_df)[0]
-        pred_label = le_status.inverse_transform([prediction])[0]
+        pred = model.predict(input_df)[0]
+        result = le_status.inverse_transform([pred])[0]
 
-        st.success(f"✅ Prediksi Status Mahasiswa: **{pred_label}**")
+        # Tampilkan hasil
+        st.write("---")
+        if result == "Graduate":
+            st.success("🎉 Mahasiswa diprediksi **LULUS**!")
+        elif result == "Dropout":
+            st.error("⚠️ Mahasiswa diprediksi **DROP OUT**.")
+        else:
+            st.info(f"Hasil prediksi: {result}")
 
     except Exception as e:
         st.error("Terjadi kesalahan saat memproses input.")
