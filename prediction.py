@@ -5,55 +5,72 @@ import joblib
 
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
-# Load model
+# === Load model ===
 model = joblib.load('model.joblib')
 
-# Load cleaned data untuk referensi kolom dan preprocessing
+# === Load cleaned data (tanpa Status_enc) untuk info kolom ===
 df = pd.read_csv('data_cleaned.csv')
 
-# ========== PREPROCESSING SETUP ==========
-# Encode kategori berdasarkan data latih
-cat_cols = df.select_dtypes(include=['object', 'category']).columns.tolist()
-cat_cols.remove('Status')  # jangan encode target
-num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+# === Buat encoder untuk input (pakai data asli supaya encoding konsisten) ===
+X = df.drop(columns=['Status'])
+y = df['Status']
 
-# Label Encoder untuk setiap kolom kategori
-encoders = {}
-for col in cat_cols:
-    le = LabelEncoder()
-    df[col] = le.fit_transform(df[col])
-    encoders[col] = le
+# Simpan label encoder dari training
+le_status = LabelEncoder()
+le_status.fit(y)
 
-# Scaler untuk kolom numerik
+# Encode categorical features
+X_encoded = X.copy()
+for col in X_encoded.select_dtypes(include='object').columns:
+    X_encoded[col] = LabelEncoder().fit_transform(X_encoded[col])
+
+# Scale numerical
 scaler = MinMaxScaler()
-df[num_cols] = scaler.fit_transform(df[num_cols])
+X_scaled = scaler.fit_transform(X_encoded)
 
-# ========== STREAMLIT UI ==========
+# Simpan informasi kolom
+categorical_cols = X.select_dtypes(include='object').columns.tolist()
+numerical_cols = X.select_dtypes(include=np.number).columns.tolist()
+input_cols = categorical_cols + numerical_cols
+
+# === Streamlit UI ===
 st.title("🎓 Prediksi Status Mahasiswa (Graduate / Dropout)")
-
 st.write("Silakan isi data berikut untuk memprediksi status akhir mahasiswa:")
 
-# Ambil fitur input dari data latih
-input_data = {}
+# Form untuk input satu per satu
+user_input = {}
+with st.form("input_form"):
+    for col in categorical_cols:
+        options = sorted(df[col].dropna().unique().tolist())
+        user_input[col] = st.selectbox(col, options)
 
-for col in df.drop(columns=['Status_enc']).columns:
-    if col in cat_cols:
-        options = encoders[col].classes_
-        value = st.selectbox(f"{col}", options)
-        input_data[col] = encoders[col].transform([value])[0]
-    elif col in num_cols:
-        value = st.number_input(f"{col}", min_value=0.0, step=1.0)
-        input_data[col] = value
+    for col in numerical_cols:
+        min_val = float(df[col].min())
+        max_val = float(df[col].max())
+        user_input[col] = st.slider(col, min_val, max_val, float(df[col].median()))
 
-# Buat DataFrame input
-input_df = pd.DataFrame([input_data])
+    submitted = st.form_submit_button("Prediksi")
 
-# Normalisasi kolom numerik
-input_df[num_cols] = scaler.transform(input_df[num_cols])
+if submitted:
+    try:
+        # Masukkan input ke DataFrame
+        input_df = pd.DataFrame([user_input])
 
-# Prediksi
-if st.button("Prediksi"):
-    pred = model.predict(input_df)[0]
-    label = "Graduate" if pred == 1 else "Dropout"
-    st.subheader("Hasil Prediksi:")
-    st.success(f"✅ Mahasiswa diprediksi akan: **{label}**")
+        # Encode categorical
+        for col in categorical_cols:
+            le = LabelEncoder()
+            le.fit(df[col])
+            input_df[col] = le.transform(input_df[col])
+
+        # Scale numerical
+        input_df[numerical_cols] = scaler.transform(input_df[numerical_cols])
+
+        # Prediksi
+        prediction = model.predict(input_df)[0]
+        pred_label = le_status.inverse_transform([prediction])[0]
+
+        st.success(f"✅ Prediksi Status Mahasiswa: **{pred_label}**")
+
+    except Exception as e:
+        st.error("Terjadi kesalahan saat memproses input.")
+        st.exception(e)
