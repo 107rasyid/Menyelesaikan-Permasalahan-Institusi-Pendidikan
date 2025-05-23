@@ -25,9 +25,11 @@ Oleh karena itu, diperlukan sebuah solusi berbasis data untuk memahami akar masa
 
 ## Persiapan
 Sumber data: 
-[Students' Performance](https://github.com/dicodingacademy/dicoding_dataset/blob/main/students_performance/data.csv)
+Data yang digunakan dalam proyek ini berasal dari dataset fiktif Students' Performance, yang terinspirasi dari publikasi ilmiah: Realinho, Valentim, Vieira Martins, Mónica, Machado, Jorge, and Baptista, Luís. (2021). Predict students' dropout and academic success. UCI Machine Learning Repository. https://doi.org/10.24432/C5MC89
 
-Data yang digunakan dalam proyek ini berasal dari informasi akademik siswa yang memuat berbagai informasi terkait riwayat studi, demografi, keuangan, serta status siswa. Sebelum digunakan untuk analisis, data ini terlebih dahulu dibersihkan menggunakan Notebook. Setelah proses ini, diperoleh data (data_cleaned.csv) yang siap digunakan dalam proses eksplorasi data, pemodelan prediktif, serta pembuatan visualisasi interaktif untuk mendukung pengambilan keputusan oleh pihak institusi.
+Anda bisa mengakses dataset melalui tautan ini: [Students' Performance](https://github.com/dicodingacademy/dicoding_dataset/blob/main/students_performance/data.csv)
+
+Dataset ini memuat informasi dari institusi pendidikan tinggi, mencakup data mahasiswa yang terdaftar di berbagai program sarjana seperti agronomi, desain, pendidikan, keperawatan, jurnalisme, manajemen, layanan sosial, dan teknologi. Informasi yang ada meliputi data saat pendaftaran (riwayat akademik, demografi, dan faktor sosial-ekonomi) serta kinerja akademik mahasiswa pada akhir semester pertama dan kedua. Sebelum digunakan untuk analisis, data ini terlebih dahulu dibersihkan menggunakan Notebook. Setelah proses ini, diperoleh data (data_cleaned.csv) yang siap digunakan dalam proses eksplorasi data, pemodelan prediktif, serta pembuatan visualisasi interaktif untuk mendukung pengambilan keputusan oleh pihak institusi.
 
 Setup environment:
 ```
