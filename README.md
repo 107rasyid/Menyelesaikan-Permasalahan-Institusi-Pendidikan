@@ -24,7 +24,10 @@ Oleh karena itu, diperlukan sebuah solusi berbasis data untuk memahami akar masa
 - Deployment model prediktif menggunakan Streamlit.
 
 ## Persiapan
-Sumber data: Data yang digunakan dalam proyek ini berasal dari informasi akademik siswa yang memuat berbagai informasi terkait riwayat studi, demografi, keuangan, serta status akhir siswa (Graduate atau Dropout). Sebelum digunakan untuk analisis, data ini terlebih dahulu dibersihkan menggunakan Notebook (data_cleaned.csv). Setelah proses ini, diperoleh data yang siap digunakan dalam proses eksplorasi data, pemodelan prediktif, serta pembuatan visualisasi interaktif untuk mendukung pengambilan keputusan oleh pihak institusi.
+Sumber data: 
+[Students' Performance](https://github.com/dicodingacademy/dicoding_dataset/blob/main/students_performance/data.csv)
+
+Data yang digunakan dalam proyek ini berasal dari informasi akademik siswa yang memuat berbagai informasi terkait riwayat studi, demografi, keuangan, serta status siswa. Sebelum digunakan untuk analisis, data ini terlebih dahulu dibersihkan menggunakan Notebook. Setelah proses ini, diperoleh data (data_cleaned.csv) yang siap digunakan dalam proses eksplorasi data, pemodelan prediktif, serta pembuatan visualisasi interaktif untuk mendukung pengambilan keputusan oleh pihak institusi.
 
 Setup environment:
 ```
